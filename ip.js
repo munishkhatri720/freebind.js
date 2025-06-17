@@ -16,11 +16,16 @@ function generateRandomIPArray({ bytes, available }, count) {
     if (count === undefined) {
         count = Math.floor(available / 8) * 8;
     }
+    
     assert(count <= available)
     if (count % 8) throw 'currently, only prefixes that are multiples of 8 are supported'
-    return bytes
-            .concat([...randomBytes(count / 8)])
-            .concat(Array((available - count) / 8).fill(0))
+    
+    const randomByteCount = Math.floor(count / 8);
+    const remainingByteCount = Math.floor((available - count) / 8);
+    const randomBytesArray = randomByteCount > 0 ? [...randomBytes(randomByteCount)] : [];
+    const paddingArray = remainingByteCount > 0 ? Array(remainingByteCount).fill(0) : [];
+    
+    return bytes.concat(randomBytesArray).concat(paddingArray);
 }
 
 export function generateRandomIP(cidr, count) {
